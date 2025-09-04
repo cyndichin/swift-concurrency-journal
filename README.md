@@ -5,7 +5,7 @@
 A personal log of what I learn about Swift Concurrency — quick TILs, gotchas, and small runnable examples.
 
 ## How this repo is organized
-- `journal/YYYY/` — dated notes (e.g., `journal/2025/2025-09-04-concurrency.md`)
+- `journal/` — dated notes (e.g., `journal/category/2025-09-04-concurrency.md`)
 - `snippets/` — tiny, focused code samples 
 - `templates/` — note templates
 - `resources/` — links to talks, docs, posts
@@ -20,5 +20,5 @@ A personal log of what I learn about Swift Concurrency — quick TILs, gotchas, 
 1. Copy a template:
    - Quick note: `templates/quick-note.md` → quick learnings <10 minutes.
    - Deep dive: `templates/deep-dive.md` → longer form.
-2. Save under `journal/YYYY/`.
+2. Save under `journal/category/`.
 3. If you made a sample, drop it in `snippets/` and reference it from the note.
