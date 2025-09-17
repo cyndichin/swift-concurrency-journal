@@ -24,7 +24,33 @@ Behind the scenes, @MainActor is a global actor who performs tasks on the main t
 - Before Swift Concurrency, we would use the traditional `DispatchQueue.main` methods to ensure our code runs on the main thread. In Swift Concurrency, we can make use of the `@MainActor`.
 - This is great when working with MVVM in SwiftUI as you only want to trigger view redraws on the main thread.
 
-Cautions: This method is only guaranteed to be dispatched to the main thread if you call it from an asynchronous context. Xcode 16 will adequately let you know about this, but it’s essential to be aware of this functionality to understand how a main actor attribute applies.
+
+#### Notes:
+`@MainActor` is a Swift concurrency annotation that says: “this thing (function/type/property) is isolated to the main actor,” i.e., it must run on the main thread. The compiler then:
+- Enforces access rules: touching main-actor-isolated APIs from a background actor requires an await hop.
+- Inserts hops when needed: await MainActor.run { ... } or Task { @MainActor in ... } perform the jump for you.
+- Prevents data races: main-actor state can’t be mutated off the main thread.
+
+Useful to use for:
+- UI updates (UIKit/AppKit/SwiftUI), view models feeding UI, navigation, alerts.
+- Callbacks that must fire on main (e.g., delegate methods consumed by UI).
+- XCTest UI tests (or tests that interact with main-thread-only APIs).
+
+* Avoid slapping @MainActor on big model/data layers—doing so serializes too much work on the main thread.
+
+#### Different ways to use MainActor
+* **Task { @MainActor in … }** creates a new async task whose entire body is isolated to the MainActor (i.e., it always runs on the main thread), no matter where you create it.
+- Because it’s a Task, the body may suspend (await) and will resume on the MainActor each time.
+- It schedules work; it does not run inline immediately.
+
+* **await MainActor.run { … }**
+- Runs a non-suspending block inline on the main actor and returns immediately. You can’t await inside the closure.
+
+* **@MainActor func foo() async { … }**
+Makes the function itself main-isolated. Callers hop to main; inside, you can await and you’ll still be on main when you resume.
+
+* **Task { … } (no annotation)**
+Inherits the current actor. If you start it from a main-actor context, it’s effectively main anyway; from a background actor, it stays there. Adding @MainActor removes the ambiguity and forces main.
 
 ### Custom Global Actor
 Can create custom global actors to group and isolate access to global or static state

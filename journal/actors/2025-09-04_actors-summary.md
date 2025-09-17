@@ -31,7 +31,8 @@ print(await actor.balance)
 ```
 
 ## Gotchas
-- Pitfall or surprising behavior.
+- Pitfalls to keep in mind:
+    - Over-annotating types with @MainActor can push heavy work onto main—split UI
 
 ## Follow-ups
 - Why not make the property private instead of exposing it to be accessed if we should go through the actor's method in an nonisolated context?
